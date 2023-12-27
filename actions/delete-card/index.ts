@@ -8,6 +8,10 @@ import { createSafeAction } from "@/lib/create-safe-action";
 
 import { DeleteCard } from "./schema";
 import { InputType, ReturnType } from "./types";
+import { createAuditLog } from "@/lib/create-audit-log";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
+import { incrementBoardCount } from "@/lib/org-limit";
+import { checkSubscription } from "@/lib/subscription";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -17,6 +21,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       error: "Unauthorized",
     };
   }
+
+  const isPro = await checkSubscription();
 
   const { id, boardId } = data;
   let card;
@@ -32,6 +38,17 @@ const handler = async (data: InputType): Promise<ReturnType> => {
           },
         },
       },
+    });
+
+    if (!isPro) {
+      await incrementBoardCount();
+    }
+
+    await createAuditLog({
+      entityId: card.id,
+      entityType: ENTITY_TYPE.CARD,
+      entityTitle: card.title,
+      action: ACTION.DELETE,
     });
   } catch (error) {
     console.log(error);

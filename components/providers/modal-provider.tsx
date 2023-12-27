@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CardModal } from "../modals/card-modal";
+import { ProModal } from "../modals/pro-modal";
 
 type Props = {};
 
@@ -17,6 +18,7 @@ const ModalProvider = (props: Props) => {
   return (
     <>
       <CardModal />
+      <ProModal />
     </>
   );
 };
