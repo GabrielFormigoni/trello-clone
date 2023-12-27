@@ -72,3 +72,5 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
     );
   }
 );
+
+FormTextarea.displayName = "FormTextarea";
